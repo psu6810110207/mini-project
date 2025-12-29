@@ -1,7 +1,6 @@
 import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, OneToMany } from 'typeorm';
 import { Movie } from './movie.entity';
 import { Seat } from './seat.entity';
-
 @Entity()
 export class Showtime {
   @PrimaryGeneratedColumn()
@@ -9,7 +8,7 @@ export class Showtime {
   @Column()
   startTime: Date;
 
-  @ManyToOne(() => Movie, (movie) => movie.showtimes)
+  @ManyToOne(() => Movie, (movie) => movie.showtime)
   movie: Movie;
 
   @OneToMany(() => Seat, (seat) => seat.showtime)

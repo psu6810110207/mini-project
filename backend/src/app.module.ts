@@ -3,10 +3,10 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule } from '@nestjs/config';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { UserModule } from './user/user.module';
-import { MoviesModule } from './movies/movies.module';
-import { BookingModule } from './booking/booking.module';
+import { UserModule } from './user/user.module'; // หรือ users.module เช็ค path ดีๆ
 import { AuthModule } from './auth/auth.module';
+import { BookingModule } from './booking/booking.module';
+import { MoviesModule } from './movies/movies.module';
 
 @Module({
   imports: [
@@ -26,9 +26,9 @@ import { AuthModule } from './auth/auth.module';
       synchronize: true,      // **สำคัญ** แก้ Database ตามโค้ดเราอัตโนมัติ (ใช้เฉพาะตอน Dev)
     }),
     UserModule,
-    MoviesModule,
-    BookingModule,
     AuthModule,
+    BookingModule,
+    MoviesModule,
   ],
   controllers: [AppController],
   providers: [AppService],

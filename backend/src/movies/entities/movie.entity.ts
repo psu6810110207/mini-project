@@ -1,5 +1,5 @@
 import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
-import { Showtime } from './showtime.entity';
+import { Seat } from './seat.entity';
 
 @Entity()
 export class Movie {
@@ -7,14 +7,14 @@ export class Movie {
   id: number;
 
   @Column()
-  title: string;
+  title: string; // ชื่อหนัง
 
   @Column()
-  description: string;
+  description: string; // รายละเอียด
 
   @Column()
-  duration: number; // ความยาวหนัง (นาที)
+  showtime: Date; // เวลาฉาย
 
-  @OneToMany(() => Showtime, (showtime) => showtime.movie)
-  showtimes: Showtime[];
+  @OneToMany(() => Seat, (seat) => seat.movie)
+  seats: Seat[]; // หนัง 1 เรื่อง มีที่นั่งเยอะๆ
 }

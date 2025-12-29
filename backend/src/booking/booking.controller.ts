@@ -1,34 +1,24 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
-import { BookingService } from './booking.service';
+import { Controller, Get, Post, Body, UseGuards, Request } from '@nestjs/common';
+import { BookingsService } from './booking.service';
+import { AuthGuard } from '@nestjs/passport';
 import { CreateBookingDto } from './dto/create-booking.dto';
-import { UpdateBookingDto } from './dto/update-booking.dto';
 
 @Controller('booking')
 export class BookingController {
-  constructor(private readonly bookingService: BookingService) {}
+  constructor(private readonly bookingService: BookingsService) {}
 
+  @UseGuards(AuthGuard('jwt'))
   @Post()
-  create(@Body() createBookingDto: CreateBookingDto) {
-    return this.bookingService.create(createBookingDto);
+  create(@Request() req, @Body() createBookingDto: CreateBookingDto) {
+    // ดึง userId มาจาก Token (req.user)
+    const userId = req.user.userId;
+    // ใช้ createBookingDto (ตัวเล็ก)
+    return this.bookingService.createBooking(userId, createBookingDto.seatIds);
   }
 
+  @UseGuards(AuthGuard('jwt'))
   @Get()
   findAll() {
     return this.bookingService.findAll();
-  }
-
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.bookingService.findOne(+id);
-  }
-
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateBookingDto: UpdateBookingDto) {
-    return this.bookingService.update(+id, updateBookingDto);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.bookingService.remove(+id);
   }
 }

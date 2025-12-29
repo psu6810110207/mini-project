@@ -1,1 +1,3 @@
-export class CreateBookingDto {}
+export class CreateBookingDto {
+  seatIds: number[];
+}
