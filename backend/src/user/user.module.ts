@@ -8,5 +8,6 @@ import { User } from './entities/user.entity'; // 2. เพิ่ม import Enti
   imports: [TypeOrmModule.forFeature([User])], // 3. เพิ่มบรรทัดนี้ เพื่อบอกว่า Module นี้ใช้ตาราง User
   controllers: [UserController],
   providers: [UserService],
+  exports: [UserService],
 })
 export class UserModule {}
