@@ -12,8 +12,8 @@ export class Movie {
   @Column()
   description: string; // รายละเอียด
 
-  @Column()
-  showtime: Date; // เวลาฉาย
+  @Column({ type: 'timestamp', nullable: true })
+  showtime: Date; // ต้องมีตัวนี้ให้ตรงกับใน DB
 
   @OneToMany(() => Seat, (seat) => seat.movie)
   seats: Seat[]; // หนัง 1 เรื่อง มีที่นั่งเยอะๆ

@@ -5,11 +5,12 @@ import { MoviesController } from './movies.controller';
 import { Movie } from './entities/movie.entity';
 import { Showtime } from './entities/showtime.entity';
 import { Seat } from './entities/seat.entity';
+import { SeatsService } from './seats.service'; // เพิ่มอันนี้
+import { SeatsController } from './seats.controller'; // เพิ่มอันนี้
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Movie, Showtime, Seat])], // ใส่ให้ครบ 3 ตัว
-  controllers: [MoviesController],
-  providers: [MoviesService],
-  exports: [TypeOrmModule] // export เผื่อ Module อื่นต้องใช้
+  imports: [TypeOrmModule.forFeature([Movie, Seat])],
+  controllers: [MoviesController, SeatsController], // ใส่ SeatsController เพิ่ม
+  providers: [MoviesService, SeatsService], // ใส่ SeatsService เพิ่ม
 })
 export class MoviesModule {}

@@ -3,7 +3,6 @@ import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import api from '../services/api';
 
-// --- ประกาศ Interface ตรงนี้เลย (ทางลัด) ---
 interface LoginFormData {
   email: string;
   password: string;

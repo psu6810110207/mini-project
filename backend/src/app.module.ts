@@ -1,36 +1,43 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { ConfigModule } from '@nestjs/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { UserModule } from './user/user.module'; // หรือ users.module เช็ค path ดีๆ
 import { AuthModule } from './auth/auth.module';
 import { BookingModule } from './booking/booking.module';
 import { MoviesModule } from './movies/movies.module';
+import { SeatsController } from './seats/seats.controller';
+import { SeatsService } from './seats/seats.service';
 
 @Module({
   imports: [
     // 1. โหลด Config Module เพื่อใช้อ่านค่าต่างๆ
     ConfigModule.forRoot({
-      isGlobal: true,
-    }),
-    // 2. ตั้งค่าเชื่อมต่อ Database (ต้องตรงกับใน docker-compose.yml)
-    TypeOrmModule.forRoot({
-      type: 'postgres',
-      host: 'localhost',
-      port: 5432,
-      username: 'admin',      // ตรงกับ POSTGRES_USER
-      password: 'password123',// ตรงกับ POSTGRES_PASSWORD
-      database: 'moviedb',    // ตรงกับ POSTGRES_DB
-      autoLoadEntities: true, // โหลด Entity อัตโนมัติ
-      synchronize: true,      // **สำคัญ** แก้ Database ตามโค้ดเราอัตโนมัติ (ใช้เฉพาะตอน Dev)
-    }),
+      isGlobal: true, // ให้เรียกใช้ได้ทุกที่ในโปรเจกต์
+      envFilePath: '.env',
+  }),
+    TypeOrmModule.forRootAsync({
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: (configService: ConfigService) => ({
+        type: 'postgres', // <--- เปลี่ยนเป็น postgres
+        host: configService.get<string>('DB_HOST'),
+        port: configService.get<number>('DB_PORT'),
+        username: configService.get<string>('DB_USERNAME'),
+        password: configService.get<string>('DB_PASSWORD'),
+        database: configService.get<string>('DB_NAME'),
+        autoLoadEntities: true,
+        synchronize: true, // ใช้ true เฉพาะตอน Dev (ห้ามใช้บน Production จริง)
+      }),
+
+      }),
     UserModule,
     AuthModule,
     BookingModule,
     MoviesModule,
   ],
-  controllers: [AppController],
-  providers: [AppService],
+  controllers: [AppController, SeatsController],
+  providers: [AppService, SeatsService],
 })
 export class AppModule {}

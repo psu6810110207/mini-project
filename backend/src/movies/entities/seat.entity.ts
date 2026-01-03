@@ -13,11 +13,8 @@ export class Seat {
   @Column({ default: false })
   isBooked: boolean; // จองรึยัง?
 
-  @ManyToOne(() => Movie, (movie) => movie.seats, { onDelete: 'CASCADE' })
-  movie: Movie; // ที่นั่งนี้ของหนังเรื่องไหน
-
-  @ManyToOne(() => Showtime, (showtime) => showtime.seats, { onDelete: 'CASCADE' })
-  showtime: Showtime;
+  @ManyToOne(() => Movie, (movie) => movie.seats)
+  movie: Movie;// ที่นั่งนี้ของหนังเรื่องไหน
 
   @ManyToOne(() => Booking, (booking) => booking.seats, { nullable: true })
   booking: Booking; // ที่นั่งนี้อยู่ในการจองบิลไหน (ถ้ายังไม่จอง เป็น null ได้)

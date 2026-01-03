@@ -11,6 +11,4 @@ export class Showtime {
   @ManyToOne(() => Movie, (movie) => movie.showtime)
   movie: Movie;
 
-  @OneToMany(() => Seat, (seat) => seat.showtime)
-  seats: Seat[];
 }

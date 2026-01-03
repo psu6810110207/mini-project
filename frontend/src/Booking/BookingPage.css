@@ -1,0 +1,75 @@
+.container {
+  text-align: center;
+  padding: 20px;
+  font-family: Arial, sans-serif;
+}
+
+.screen {
+  background-color: #ddd;
+  height: 50px;
+  width: 80%;
+  margin: 20px auto;
+  transform: perspective(300px) rotateX(-5deg); /* เอียงนิดๆ ให้เหมือนจอหนัง */
+  box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  color: #555;
+}
+
+.seats-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr); /* แถวละ 5 ที่นั่ง (ปรับเลขได้ตามต้องการ) */
+  gap: 15px;
+  max-width: 400px;
+  margin: 0 auto;
+}
+
+.seat {
+  width: 50px;
+  height: 50px;
+  border-radius: 8px 8px 15px 15px; /* ทรงเก้าอี้ */
+  border: none;
+  font-size: 14px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+
+.seat:hover:not(:disabled) {
+  transform: scale(1.1); /* ขยายเวลานำเมาส์ไปชี้ */
+}
+
+/* สถานะต่างๆ ของเก้าอี้ */
+.seat.available {
+  background-color: #b0c4de; /* สีเทาฟ้า (ว่าง) */
+  color: #333;
+}
+
+.seat.selected {
+  background-color: #4caf50; /* สีเขียว (เลือกอยู่) */
+  color: white;
+}
+
+.seat.booked {
+  background-color: #e57373; /* สีแดง (จองแล้ว) */
+  color: white;
+  cursor: not-allowed;
+}
+
+.confirm-btn {
+  margin-top: 30px;
+  padding: 10px 20px;
+  font-size: 18px;
+  background-color: #333;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.confirm-btn:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
