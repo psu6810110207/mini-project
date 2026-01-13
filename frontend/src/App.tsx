@@ -34,7 +34,8 @@ function App() {
         {/* --- โซนสาธารณะ (ใครก็เข้าได้) --- */}
         <Route path="/" element={<HomePage />} />
         <Route path="/login" element={<Login />} />
-        <Route path="/booking" element={<BookingPage />} /> 
+        <Route path="/booking/:id" element={<BookingPage />} />
+        <Route path="/booking" element={<Navigate to="/" />} />
 
         {/* --- โซนสมาชิก (ต้องล็อกอิน) --- */}
         {/* 🚩 แก้ไข: เปลี่ยนจาก path="/" เป็น "/member" เพื่อไม่ให้ชนกับหน้าแรก */}

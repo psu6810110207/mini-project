@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import { useParams } from 'react-router-dom';
 import './BookingPage.css';
 
-// 1. สร้าง "แม่พิมพ์" (Interface) เพื่อบอกว่าข้อมูลที่นั่งหน้าตาเป็นยังไง
 interface Seat {
   id: number;
   seatNumber: number;
@@ -10,96 +9,108 @@ interface Seat {
 }
 
 const BookingPage = () => {
-  // 2. ระบุ Type ใน useState (<Seat[]> และ <number[]>)
-  const [seats, setSeats] = useState<Seat[]>([]); 
-  const [selectedSeats, setSelectedSeats] = useState<number[]>([]); 
-  const movieId = 1;
+  const { id } = useParams();
 
+  // กำหนดชื่อหนังตาม ID
+  const movieTitle = id === '1' ? "Iron Man 1" : "Avatar: The Way of Water";
+
+  const [seats, setSeats] = useState<Seat[]>([]);
+  const [selectedSeats, setSelectedSeats] = useState<number[]>([]);
+
+  // สร้างข้อมูลที่นั่งจำลอง
   useEffect(() => {
-    fetchSeats();
-  }, []);
-
-  const fetchSeats = async () => {
-    try {
-      const response = await axios.get(`http://localhost:3000/seats/movie/${movieId}`);
-      // TypeScript จะรู้แล้วว่า a และ b คือ Seat
-      const sortedSeats = response.data.sort((a: Seat, b: Seat) => a.seatNumber - b.seatNumber);
-      setSeats(sortedSeats);
-    } catch (error) {
-      console.error("Error fetching seats:", error);
-      alert("ไม่สามารถดึงข้อมูลที่นั่งได้");
+    const mockSeats: Seat[] = [];
+    for (let i = 1; i <= 40; i++) {
+      mockSeats.push({
+        id: i,
+        seatNumber: i,
+        isBooked: Math.random() < 0.3 
+      });
     }
-  };
+    setSeats(mockSeats);
+  }, [id]);
 
-  // 3. ระบุว่าตัวแปร seat ที่รับเข้ามา ต้องมีหน้าตาเหมือนแม่พิมพ์ Seat
   const handleSeatClick = (seat: Seat) => {
     if (seat.isBooked) return;
-
     if (selectedSeats.includes(seat.id)) {
-      setSelectedSeats(selectedSeats.filter(id => id !== seat.id));
+      setSelectedSeats(selectedSeats.filter(s => s !== seat.id));
     } else {
       setSelectedSeats([...selectedSeats, seat.id]);
     }
   };
 
-  const handleConfirmBooking = async () => {
-    const token = localStorage.getItem('token');
+  // ✅ เพิ่มฟังก์ชันนี้กลับมาครับ!
+  const handleConfirmBooking = () => {
+    if (selectedSeats.length === 0) return;
     
-    if (!token) {
-      alert("กรุณาเข้าสู่ระบบก่อนจองตั๋ว!");
-      return;
-    }
-
-    try {
-      await axios.post('http://localhost:3000/bookings', 
-        { seatIds: selectedSeats },
-        { 
-          headers: { Authorization: `Bearer ${token}` }
-        }
-      );
-
-      alert("🎉 จองตั๋วสำเร็จเรียบร้อย!");
-      setSelectedSeats([]);
-      fetchSeats();
-
-    } catch (error: any) { // 4. ใส่ : any เพื่อให้เข้าถึง error.response ได้โดยไม่ฟ้อง Error
-      console.error(error);
-      const errorMessage = error.response?.data?.message || "เกิดข้อผิดพลาดในการจอง";
-      alert(`❌ จองไม่สำเร็จ: ${errorMessage}`);
-    }
+    // แสดง Alert ยืนยัน
+    alert(`🎉 จองสำเร็จ!\n\nหนัง: ${movieTitle}\nที่นั่ง: ${selectedSeats.join(', ')}\nราคา: ${selectedSeats.length * 200} บาท`);
+    
+    // เคลียร์ที่นั่งที่เลือกหลังจองเสร็จ
+    setSelectedSeats([]);
   };
-
   return (
-    <div className="container">
-      <h2>จองตั๋วหนัง: Avatar The Way of Water</h2>
+    <div className="container" style={{ textAlign: 'center', color: 'white', paddingTop: '20px' }}>
       
-      <div className="screen">SCREEN</div>
+      <h2 style={{ fontSize: '24px', marginBottom: '20px' }}>
+         จองตั๋วหนัง: {movieTitle} <span style={{color: 'yellow'}}>(รหัส {id})</span>
+      </h2>
+      
+      <div className="screen" style={{ 
+          background: '#ccc', color: 'black', padding: '10px', 
+          margin: '0 auto 30px', maxWidth: '600px', fontWeight: 'bold' 
+      }}>
+        SCREEN
+      </div>
 
-      <div className="seats-grid">
+      <div style={{ 
+          display: 'grid', 
+          gridTemplateColumns: 'repeat(8, 1fr)', 
+          gap: '10px',
+          maxWidth: '400px',
+          margin: '0 auto'
+      }}>
         {seats.map((seat) => (
           <button
             key={seat.id}
-            className={`seat ${
-              seat.isBooked 
-                ? 'booked'
-                : selectedSeats.includes(seat.id) 
-                  ? 'selected'
-                  : 'available'
-            }`}
             onClick={() => handleSeatClick(seat)}
             disabled={seat.isBooked}
+            style={{
+              padding: '10px',
+              border: 'none',
+              borderRadius: '5px',
+              fontWeight: 'bold',
+              cursor: seat.isBooked ? 'not-allowed' : 'pointer',
+              backgroundColor: seat.isBooked 
+                ? '#555'       
+                : selectedSeats.includes(seat.id) 
+                  ? '#E50914'  
+                  : '#22c55e', 
+              color: 'white'
+            }}
           >
             {seat.seatNumber}
           </button>
         ))}
       </div>
 
-      <div style={{ marginTop: '20px' }}>
-        <p>ที่นั่งที่เลือก: {selectedSeats.length > 0 ? selectedSeats.length : '-'}</p>
+      <div style={{ marginTop: '30px' }}>
+        <p>ที่นั่งที่เลือก: {selectedSeats.length > 0 ? selectedSeats.join(', ') : '-'}</p>
+        
+        {/* ✅ เพิ่ม onClick ตรงนี้แล้วครับ กดได้แน่นอน! */}
         <button 
-          className="confirm-btn"
           onClick={handleConfirmBooking}
           disabled={selectedSeats.length === 0}
+          style={{
+            marginTop: '10px',
+            padding: '10px 30px',
+            backgroundColor: selectedSeats.length > 0 ? '#E50914' : '#555',
+            color: 'white',
+            border: 'none',
+            fontSize: '16px',
+            cursor: selectedSeats.length > 0 ? 'pointer' : 'not-allowed', // เปลี่ยนเมาส์ให้รู้ว่ากดได้
+            transition: '0.3s'
+          }}
         >
           ยืนยันการจอง
         </button>

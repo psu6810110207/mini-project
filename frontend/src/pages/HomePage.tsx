@@ -1,25 +1,45 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react'; // ✅ เพิ่ม hooks
 import { useAuth } from '../context/AuthContext';
 import { Link } from 'react-router-dom';
 import { Search, User } from 'lucide-react';
 
-// 1. ต้องประกาศฟังก์ชัน Component ก่อนเสมอ
+interface Movie {
+  id: number;
+  title: string;
+  img: string;
+  description?: string;
+}
+
 const HomePage = () => {
   
-  // 2. เรียกใช้ Hooks และตัวแปรต่างๆ ตรงนี้ (ก่อน return)
   const { isAuthenticated, logout } = useAuth();
 
-  // ข้อมูลจำลองหนัง (Mock Data)
-  const movies = [
-    { id: 1, title: "Avatar: The Way of Water", img: "https://image.tmdb.org/t/p/w500/t6HIqrRAclMCA60NsSmeqe9RmNV.jpg" },
-    { id: 2, title: "Avatar: The Way of Water", img: "https://image.tmdb.org/t/p/w500/t6HIqrRAclMCA60NsSmeqe9RmNV.jpg" },
-    { id: 3, title: "Avatar: The Way of Water", img: "https://image.tmdb.org/t/p/w500/t6HIqrRAclMCA60NsSmeqe9RmNV.jpg" },
-    { id: 4, title: "Avatar: The Way of Water", img: "https://image.tmdb.org/t/p/w500/t6HIqrRAclMCA60NsSmeqe9RmNV.jpg" },
-    { id: 5, title: "Avatar: The Way of Water", img: "https://image.tmdb.org/t/p/w500/t6HIqrRAclMCA60NsSmeqe9RmNV.jpg" }
+  // ✅ 1. สร้าง State เก็บข้อมูลหนังและสถานะ Loading
+  
+  const [movies, setMovies] = useState<Movie[]>([]); 
+  const [loading, setLoading] = useState<boolean>(true);
 
-  ];
+  // ✅ 2. ดึงข้อมูลจาก Backend เมื่อหน้าเว็บโหลด
+  useEffect(() => {
+    const fetchMovies = async () => {
+      try {
+        // ยิงไปที่ NestJS Backend ของคุณ
+        const response = await fetch('http://localhost:3000/movies'); 
+        
+        if (!response.ok) {
+          throw new Error('ดึงข้อมูลไม่สำเร็จ');
+        }
+        const data = await response.json();
+        setMovies(data); // เอาข้อมูลใส่ State
+      } catch (error) {
+        console.error("Error fetching movies:", error);
+      } finally {
+        setLoading(false); // ปิดสถานะ Loading
+      }
+    };
 
-  // 3. ส่วนแสดงผล (JSX) ต้องอยู่ใน return เท่านั้น
+    fetchMovies();
+  }, []);
   return (
     <div className="min-h-screen bg-black text-white font-sans flex flex-col justify-between">
       
@@ -42,9 +62,8 @@ const HomePage = () => {
           <button className="text-gray-300 hover:text-white transition"><Search size={20} /></button>
           <button className="text-gray-300 hover:text-white text-sm font-bold">EN/TH</button>
 
-          {/* ✅ จุดเช็ค Login: วาง Logic ตรงนี้ เพื่อเปลี่ยนแค่ปุ่ม */}
+          {/* จุดเช็ค Login */}
           {isAuthenticated ? (
-            // 🟢 ถ้าล็อกอินแล้ว: โชว์ปุ่ม Logout
             <div className="flex items-center gap-4">
               <span className="text-yellow-500 font-bold hidden md:block">สวัสดีสมาชิก!</span>
               <button 
@@ -55,7 +74,6 @@ const HomePage = () => {
               </button>
             </div>
           ) : (
-            // 🔴 ถ้ายังไม่ล็อกอิน: โชว์ปุ่ม Login
             <Link to="/login">
               <button className="bg-red-600 text-white px-4 py-1 rounded hover:bg-red-700 transition font-medium text-sm">
                 เข้าสู่ระบบ
@@ -75,32 +93,38 @@ const HomePage = () => {
           Showing 
         </h1>
 
-        {/* Movie Grid */}
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6">
-          {movies.map((movie) => (
-            <Link to="/booking" key={movie.id} className="group relative block">
-              <div className="aspect-[2/3] overflow-hidden rounded-lg bg-gray-800 relative">
-                <img 
-                  src={movie.img} 
-                  alt={movie.title} 
-                  className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-                  onError={(e) => {e.currentTarget.src = "https://via.placeholder.com/300x450?text=No+Image"}} 
-                />
-                
-                {/* Overlay */}
-                <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity duration-300">
-                  <span className="border border-white px-4 py-2 rounded text-sm hover:bg-yellow-500 hover:border-yellow-500 hover:text-black font-bold uppercase tracking-wider transition">
-                    Buy Ticket
-                  </span>
+        {/* ✅ 3. ส่วนแสดงผล: ถ้าโหลดอยู่ให้ขึ้นข้อความ ถ้าเสร็จแล้วให้โชว์หนัง */}
+        {loading ? (
+          <div className="text-center text-gray-400 mt-20 text-lg">
+            กำลังโหลดข้อมูลภาพยนตร์...
+          </div>
+        ) : (
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6">
+            {movies.map((movie) => (
+              <Link to={`/booking/${movie.id}`} key={movie.id} className="group relative block">
+                <div className="aspect-[2/3] overflow-hidden rounded-lg bg-gray-800 relative">
+                  <img 
+                    src={movie.img} 
+                    alt={movie.title} 
+                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                    onError={(e) => {e.currentTarget.src = "https://via.placeholder.com/300x450?text=No+Image"}} 
+                  />
+                  
+                  {/* Overlay */}
+                  <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity duration-300">
+                    <span className="border border-white px-4 py-2 rounded text-sm hover:bg-yellow-500 hover:border-yellow-500 hover:text-black font-bold uppercase tracking-wider transition">
+                      Buy Ticket
+                    </span>
+                  </div>
                 </div>
-              </div>
 
-              <h3 className="mt-3 text-sm text-center text-gray-400 group-hover:text-white truncate transition-colors">
-                {movie.title}
-              </h3>
-            </Link>
-          ))}
-        </div>
+                <h3 className="mt-3 text-sm text-center text-gray-400 group-hover:text-white truncate transition-colors">
+                  {movie.title}
+                </h3>
+              </Link>
+            ))}
+          </div>
+        )}
       </main>
 
       {/* --- 3. Footer Booking Bar --- */}
@@ -114,6 +138,7 @@ const HomePage = () => {
           <div className="flex-1 relative">
              <select className="w-full bg-white/20 border border-black/30 px-4 py-2 rounded focus:outline-none focus:border-black font-medium appearance-none cursor-pointer">
               <option>เลือกภาพยนตร์...</option>
+              {/* ตรงนี้ในอนาคตก็ควร map จาก state movies เหมือนกันครับ */}
               <option>Avatar: The Way of Water</option>
               <option>ธี่หยด 4</option>
             </select>
@@ -126,8 +151,7 @@ const HomePage = () => {
             </select>
           </div>
         </div>
-
-        <Link to="/booking" className="w-full md:w-auto">
+        <Link to="/booking/1" className="w-full md:w-auto">
           <button className="w-full bg-[#E50914] hover:bg-red-700 text-white font-bold py-2 px-8 rounded shadow-lg whitespace-nowrap transition-colors">
             รอบฉาย
           </button>
