@@ -1,78 +1,79 @@
-import React, { useState } from 'react';
-import { useAuth } from '../context/AuthContext';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import api from '../services/api';
-
-interface LoginFormData {
-  email: string;
-  password: string;
-}
-
-interface LoginResponse {
-  accessToken: string;
-}
-// ------------------------------------------
+import { useAuth } from '../context/AuthContext';
+import './Login.css';
 
 const Login = () => {
-  const { login } = useAuth();
+  // สร้างตัวแปรเก็บข้อมูล
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+
   const navigate = useNavigate();
+  const { login } = useAuth(); 
 
-  // State เก็บค่าในฟอร์ม
-  const [formData, setFormData] = useState<LoginFormData>({
-    email: '',
-    password: '',
-  });
+  // ฟังก์ชันกดปุ่ม Login (ทำงานตรงนี้แน่นอน)
+  const handleLoginClick = () => {
+    // 1. เช็คก่อนว่าปุ่มทำงานไหม
+    alert("กำลังล็อกอิน... (Button Clicked!)");
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value,
-    });
-  };
+    // 2. สั่งระบบล็อกอิน
+    login(email);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    try {
-      const { data } = await api.post<LoginResponse>('/auth/login', formData);
-      alert('Login สำเร็จ! 🎉');
-      login(data.accessToken);
-      navigate('/'); 
-    } catch (error) {
-      alert('Login ไม่ผ่าน! เช็คอีเมลหรือรหัสผ่านหน่อยนะ');
-      console.error(error);
-    }
+    // 3. หน่วงเวลา 0.5 วิ แล้วเปลี่ยนหน้า
+    setTimeout(() => {
+      navigate('/');
+    }, 500);
   };
 
   return (
-    <div style={{ padding: '2rem', maxWidth: '400px', margin: '50px auto', border: '1px solid #ccc', borderRadius: '8px' }}>
-      <h2>เข้าสู่ระบบ 🔐</h2>
-      <form onSubmit={handleSubmit}>
-        <div style={{ marginBottom: '1rem' }}>
-          <label>Email:</label>
-          <input
-            type="email"
-            name="email"
-            value={formData.email}
-            onChange={handleChange}
-            required
-            style={{ width: '100%', padding: '8px', marginTop: '5px' }}
-          />
+    <div className="login-container">
+      <div className="login-box">
+        <div className="lock-icon">🔒</div>
+        <div className="login-header">
+          <h2>CINEMA LOGIN</h2>
+          <p>เข้าสู่ระบบเพื่อจองตั๋วหนัง</p>
         </div>
-        <div style={{ marginBottom: '1rem' }}>
-          <label>Password:</label>
-          <input
-            type="password"
-            name="password"
-            value={formData.password}
-            onChange={handleChange}
-            required
-            style={{ width: '100%', padding: '8px', marginTop: '5px' }}
-          />
+
+        {/* ไม่ต้องใช้ <form> แล้ว ใช้ div ธรรมดาพอ */}
+        <div>
+          <div className="input-group">
+            <input 
+              type="text" 
+              placeholder="อีเมล / Email" 
+              value={email}
+              // อัปเดตค่าอีเมลทันทีที่พิมพ์
+              onChange={(e) => setEmail(e.target.value)}
+            />
+          </div>
+          
+          <div className="input-group">
+            <input 
+              type="password" 
+              placeholder="รหัสผ่าน / Password" 
+              value={password}
+              // อัปเดตค่ารหัสผ่านทันทีที่พิมพ์
+              onChange={(e) => setPassword(e.target.value)}
+            />
+          </div>
+
+          <div className="actions">
+            <a href="#" className="forgot-pass">ลืมรหัสผ่าน?</a>
+          </div>
+
+          {/* 🚩 ปุ่มกดแบบ Direct Click (type="button") */}
+          <button 
+            type="button" 
+            className="login-btn"
+            onClick={handleLoginClick} 
+          >
+            เข้าสู่ระบบ
+          </button>
         </div>
-        <button type="submit" style={{ padding: '10px 20px', cursor: 'pointer', backgroundColor: '#4CAF50', color: 'white', border: 'none', borderRadius: '4px' }}>
-          เข้าสู่ระบบ
-        </button>
-      </form>
+
+        <div className="register-link">
+          ยังไม่มีบัญชีสมาชิก? <span>สมัครสมาชิก</span>
+        </div>
+      </div>
     </div>
   );
 };

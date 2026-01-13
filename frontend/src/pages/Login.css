@@ -1,0 +1,115 @@
+/* Login.css */
+body {
+  margin: 0;
+  font-family: 'Prompt', sans-serif; /* แนะนำให้ใช้ฟอนต์ Prompt ถ้ามี */
+  background-color: #0f0f0f; /* พื้นหลังสีดำเข้ม */
+}
+
+.login-container {
+  display: flex;
+  height: 100vh;
+  justify-content: flex-start;
+  align-items: center;
+  padding-left: 10%;
+  
+  /* แก้บรรทัดนี้: ลบ url รูปออก ใช้สีไล่เฉดอย่างเดียว */
+  background: linear-gradient(to right, #000000 0%, #434343 100%); 
+  background-size: cover;
+}
+
+.login-box {
+  background-color: rgba(0, 0, 0, 0.85); /* พื้นหลังกล่องสีดำโปร่งแสงนิดๆ */
+  padding: 40px;
+  border-radius: 15px;
+  width: 350px;
+  color: white;
+  text-align: center;
+  
+  /* เอฟเฟกต์แสงสีแดงรอบกล่อง */
+  border: 1px solid #333;
+  box-shadow: 0 0 20px rgba(229, 9, 20, 0.4); 
+}
+
+.lock-icon {
+  font-size: 40px;
+  margin-bottom: 10px;
+  color: #e50914; /* สีแดง */
+}
+
+.login-header h2 {
+  margin: 0;
+  font-size: 24px;
+  font-weight: bold;
+  letter-spacing: 1px;
+}
+
+.login-header p {
+  color: #aaa;
+  font-size: 14px;
+  margin-top: 5px;
+  margin-bottom: 30px;
+}
+
+.input-group {
+  margin-bottom: 15px;
+}
+
+.input-group input {
+  width: 100%;
+  padding: 12px 15px;
+  background-color: #333;
+  border: 1px solid #333;
+  border-radius: 5px;
+  color: white;
+  font-size: 16px;
+  box-sizing: border-box; /* สำคัญ: ให้ padding ไม่ทำให้กล่องขยายเกิน */
+  outline: none;
+}
+
+.input-group input:focus {
+  border-color: #e50914; /* เวลาคลิกพิมพ์ให้ขอบเป็นสีแดง */
+}
+
+.actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 20px;
+}
+
+.forgot-pass {
+  color: #e50914;
+  font-size: 12px;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.login-btn {
+  width: 100%;
+  padding: 12px;
+  background-color: #e50914; /* สีแดง Major/Netflix */
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 18px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.login-btn:hover {
+  background-color: #f40612;
+  box-shadow: 0 0 10px #f40612;
+}
+
+.register-link {
+  margin-top: 20px;
+  font-size: 14px;
+  color: #aaa;
+}
+
+.register-link span {
+  color: #e50914;
+  cursor: pointer;
+  font-weight: bold;
+  margin-left: 5px;
+}
