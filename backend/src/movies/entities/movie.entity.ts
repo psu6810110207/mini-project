@@ -1,20 +1,25 @@
 import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
 import { Seat } from './seat.entity';
-
+import { Showtime } from './showtime.entity';
 @Entity()
 export class Movie {
   @PrimaryGeneratedColumn()
   id: number;
 
   @Column()
-  title: string; // ชื่อหนัง
+  title: string;
 
-  @Column()
-  description: string; // รายละเอียด
+  @Column({nullable: true})
+  img: string;
 
-  @Column({ type: 'timestamp', nullable: true })
-  showtime: Date; // ต้องมีตัวนี้ให้ตรงกับใน DB
+  @Column({ nullable: true })
+  description: string;
 
-  @OneToMany(() => Seat, (seat) => seat.movie)
-  seats: Seat[]; // หนัง 1 เรื่อง มีที่นั่งเยอะๆ
+  // 👇 แก้บรรทัดนี้ครับ! เพิ่ม onDelete: 'CASCADE'
+  @OneToMany(() => Seat, (seat) => seat.movie, { cascade: true, onDelete: 'CASCADE' })
+  seats: Seat[];
+
+  // 👇 2. เพิ่มก้อนนี้เข้าไปครับ (เพื่อให้ Movie รู้จัก Showtime)
+  @OneToMany(() => Showtime, (showtime) => showtime.movie)
+  showtimes: Showtime[]; 
 }

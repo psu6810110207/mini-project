@@ -9,7 +9,7 @@ import { SeatsService } from './seats.service'; // เพิ่มอันน�
 import { SeatsController } from './seats.controller'; // เพิ่มอันนี้
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Movie, Seat])],
+  imports: [TypeOrmModule.forFeature([Movie, Seat, Showtime])],
   controllers: [MoviesController, SeatsController], // ใส่ SeatsController เพิ่ม
   providers: [MoviesService, SeatsService], // ใส่ SeatsService เพิ่ม
 })

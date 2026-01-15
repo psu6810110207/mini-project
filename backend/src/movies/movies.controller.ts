@@ -11,8 +11,23 @@ export class MoviesController {
     return this.moviesService.create(createMovieDto);
   }
 
+  @Delete(':id')
+  remove(@Param('id') id: string) {
+    return this.moviesService.remove(+id);
+  }
+
   @Get()
   findAll() {
     return this.moviesService.findAll();
+  }
+
+  @Patch(':id')
+  update(@Param('id') id: string, @Body() updateData: any) {
+    return this.moviesService.update(+id, updateData);
+  }
+  
+  @Get(':id')
+  findOne(@Param('id') id: string) {
+    return this.moviesService.findOne(+id);
   }
 }

@@ -36,4 +36,31 @@ export class MoviesService {
     // ดึงข้อมูลหนัง พร้อมดูว่ามีที่นั่งอะไรบ้าง (relations)
     return this.moviesRepository.find({ relations: ['seats'] });
   }
+
+  async remove(id: number) {
+    // คำสั่ง delete ของ TypeORM
+    await this.moviesRepository.delete(id);
+    return { message: `ลบหนัง ID ${id} เรียบร้อยแล้ว` };
+  }
+
+  // ✅ เพิ่มฟังก์ชัน update ตรงนี้
+  async update(id: number, updateData: any) {
+    // 1. อัปเดตข้อมูลลง Database
+    await this.moviesRepository.update(id, updateData);
+
+    // 2. ดึงข้อมูลล่าสุดหลังจากอัปเดตส่งกลับไป (เพื่อให้ Frontend เอาไปโชว์ทันที)
+    const updatedMovie = await this.moviesRepository.findOneBy({ id });
+    return updatedMovie;
+  }
+  async findOne(id: number) {
+    return this.moviesRepository.findOne({
+      where: { id },
+      relations: ['seats'], // ดึงข้อมูลที่นั่งมาด้วย
+      order: {
+        seats: {
+          seatNumber: 'ASC', // เรียงเลขที่นั่ง 1, 2, 3...
+        },
+      },
+    });
+  }
 }

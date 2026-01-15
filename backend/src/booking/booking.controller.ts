@@ -1,20 +1,18 @@
-import { Controller, Post, Body, UseGuards, Request } from '@nestjs/common';
-import { AuthGuard } from '@nestjs/passport';
-import { BookingsService } from './booking.service';
+import { Controller, Get, Post, Body } from '@nestjs/common';
+import { BookingService } from './booking.service';
 
-@Controller('bookings') // กำหนดชื่อ path เป็น /bookings
-@UseGuards(AuthGuard('jwt')) // 🔒 ล็อกประตู! ต้องมี Token เท่านั้นถึงจะเข้าได้
+@Controller('bookings')
 export class BookingController {
-  constructor(private readonly bookingService: BookingsService) {}
+  constructor(private readonly bookingService: BookingService) {}
 
+  // รับข้อมูลเป็น { seatIds: [1, 2, 3] }
   @Post()
-  async createBooking(@Request() req, @Body() body) {
-    const userId = req.user.id || req.user.userId; 
+  create(@Body() body: { seatIds: number[] }) {
+    return this.bookingService.createBookings(body.seatIds);
+  }
 
-  // 2. ดึงลิสต์ ID ที่นั่งจาก Body (Service ของคุณรับเป็น Array)
-  const { seatIds } = body; 
-
-  // 3. ส่งเฉพาะข้อมูลที่ Service ต้องการ
-  return this.bookingService.createBooking(userId, seatIds);
+  @Get()
+  findAll() {
+    return this.bookingService.findAll();
   }
 }

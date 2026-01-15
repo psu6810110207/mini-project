@@ -8,7 +8,7 @@ export class Showtime {
   @Column()
   startTime: Date;
 
-  @ManyToOne(() => Movie, (movie) => movie.showtime)
-  movie: Movie;
+  @ManyToOne(() => Movie, (movie) => movie.showtimes)
+  movie: Movie; 
 
 }
